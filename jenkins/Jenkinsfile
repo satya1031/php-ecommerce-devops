@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Clone') {
+            steps {
+                git 'https://github.com/your-repo/php-ecommerce-devops.git'
+            }
+        }
+
+        stage('SonarQube Scan') {
+            steps {
+                sh 'sonar-scanner'
+            }
+        }
+
+        stage('Build Docker') {
+            steps {
+                sh 'docker build -t your-dockerhub/php-ecommerce .'
+            }
+        }
+
+        stage('Push Docker') {
+            steps {
+                sh 'docker push your-dockerhub/php-ecommerce'
+            }
+        }
+
+        stage('Deploy to EKS') {
+            steps {
+                sh 'kubectl apply -f k8s/'
+            }
+        }
+    }
+}
