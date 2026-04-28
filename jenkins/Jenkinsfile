@@ -1,36 +1,82 @@
 pipeline {
     agent any
 
+    environment { 
+        IMAGE = "3.106.167.104:8083/docker-hosted/php-ecommerce"   // 🔥 NEXUS IMAGE
+        SONAR_SERVER = "sonar-scanner"
+        NEXUS_URL = "3.106.167.104:8083"
+    }
+
     stages {
 
-        stage('Clone') {
+        stage('Checkout') {
             steps {
-                git 'https://github.com/your-repo/php-ecommerce-devops.git'
+                git branch: 'main',
+                credentialsId: 'git-cred',
+                url: 'https://github.com/sridattaga/php-ecommerce-devops.git'
             }
         }
 
-        stage('SonarQube Scan') {
+        stage('Sonar Scan') {
             steps {
-                sh 'sonar-scanner'
+                withSonarQubeEnv("${SONAR_SERVER}") {
+                    sh """
+                    ${tool 'sonar-scanner'}/bin/sonar-scanner \
+                    -Dsonar.projectKey=php-ecommerce \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=http://3.106.167.104:9000 \
+                    -Dsonar.token=$SONAR_AUTH_TOKEN
+                    """
+                }
             }
         }
 
-        stage('Build Docker') {
+      
+        stage('Build Docker Image') {
             steps {
-                sh 'docker build -t your-dockerhub/php-ecommerce .'
+                sh """
+                docker build -t $IMAGE:$BUILD_NUMBER -f docker/Dockerfile .
+                """
             }
         }
 
-        stage('Push Docker') {
+        // 🔥 NEW: PUSH TO NEXUS
+        stage('Push to Nexus') {
             steps {
-                sh 'docker push your-dockerhub/php-ecommerce'
+                withCredentials([usernamePassword(
+                    credentialsId: 'nexus-cred',
+                    usernameVariable: 'NEXUS_USER',
+                    passwordVariable: 'NEXUS_PASS'
+                )]) {
+                    sh """
+                    echo $NEXUS_PASS | docker login 3.106.167.104:8083 -u $NEXUS_USER --password-stdin
+                    docker push $IMAGE:$BUILD_NUMBER
+                    """
+                }
             }
         }
 
-        stage('Deploy to EKS') {
+        stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/'
+                sh """
+                export KUBECONFIG=/var/lib/jenkins/.kube/config
+        
+                kubectl get nodes
+        
+                sed -i 's|IMAGE_TAG|$BUILD_NUMBER|g' k8s/deployment.yaml
+        
+                kubectl apply -f k8s/
+                """
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Deployment Successful"
+        }
+        failure {
+            echo "Pipeline Failed"
         }
     }
 }
