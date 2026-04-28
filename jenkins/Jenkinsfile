@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment { 
-        IMAGE = "3.106.167.104:8083/docker-hosted/php-ecommerce"   // 🔥 NEXUS IMAGE
+        IMAGE = "18.220.217.117:8081/php-hosted"
         SONAR_SERVER = "sonar"
-        NEXUS_URL = "3.106.167.104:8083"
+        NEXUS_URL = "18.220.217.117:8081"
     }
 
     stages {
@@ -49,7 +49,7 @@ pipeline {
                     passwordVariable: 'NEXUS_PASS'
                 )]) {
                     sh """
-                    echo $NEXUS_PASS | docker login 3.106.167.104:8083 -u $NEXUS_USER --password-stdin
+                    echo $NEXUS_PASS | docker login 18.220.217.117:8081 -u $NEXUS_USER --password-stdin
                     docker push $IMAGE:$BUILD_NUMBER
                     """
                 }
