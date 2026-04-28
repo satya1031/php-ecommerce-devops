@@ -17,12 +17,13 @@ pipeline {
 
        stage('Sonar Scan') {
     steps {
-        withSonarQubeEnv("${SONAR_SERVER}") {
+        withSonarQubeEnv('sonar-server') {
             withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
                 sh """
-                ${tool 'sonar'}/bin/sonar-scanner \
+                ${tool 'sonar-scanner'}/bin/sonar-scanner \
                 -Dsonar.projectKey=php-ecommerce \
                 -Dsonar.sources=. \
+                -Dsonar.host.url=http://18.220.217.117:9000 \
                 -Dsonar.login=$SONAR_TOKEN
                 """
             }
