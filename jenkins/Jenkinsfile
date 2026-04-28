@@ -33,12 +33,12 @@ pipeline {
 
       
         stage('Build Docker Image') {
-            steps {
-                sh """
-                docker build -t $IMAGE:$BUILD_NUMBER -f docker/Dockerfile .
-                """
-            }
-        }
+    steps {
+        sh '''
+        docker build -t $IMAGE:$BUILD_NUMBER -f docker/Dockerfile .
+        '''
+    }
+}
 
         // 🔥 NEW: PUSH TO NEXUS
         stage('Push to Nexus') {
