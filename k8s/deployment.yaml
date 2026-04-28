@@ -3,22 +3,22 @@ kind: Deployment
 metadata:
   name: php-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: php
+      app: php-app
   template:
     metadata:
       labels:
-        app: php
+        app: php-app
     spec:
+      imagePullSecrets:
+        - name: nexus-secret
       containers:
-      - name: php
-        image: your-dockerhub/php-ecommerce
-        ports:
-        - containerPort: 80
-        envFrom:
-        - configMapRef:
-            name: app-config
-        - secretRef:
-            name: app-secret
+        - name: php-app
+          image: 3.106.167.104:8083/docker-hosted/php-ecommerce:30
+          ports:
+            - containerPort: 80
+          env:
+            - name: DB_HOST
+              value: mysql
