@@ -3,7 +3,7 @@ pipeline {
 
     environment { 
         IMAGE = "3.106.167.104:8083/docker-hosted/php-ecommerce"   // 🔥 NEXUS IMAGE
-        SONAR_SERVER = "sonar-scanner"
+        SONAR_SERVER = "sonar"
         NEXUS_URL = "3.106.167.104:8083"
     }
 
@@ -19,10 +19,10 @@ pipeline {
             steps {
                 withSonarQubeEnv("${SONAR_SERVER}") {
                     sh """
-                    ${tool 'sonar-scanner'}/bin/sonar-scanner \
+                    ${tool 'sonar'}/bin/sonar-scanner \
                     -Dsonar.projectKey=php-ecommerce \
                     -Dsonar.sources=. \
-                    -Dsonar.host.url=http://3.106.167.104:9000 \
+                    -Dsonar.host.url=http://18.220.217.117:9000 \
                     -Dsonar.token=$SONAR_AUTH_TOKEN
                     """
                 }
