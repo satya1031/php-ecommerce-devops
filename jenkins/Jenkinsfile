@@ -18,7 +18,7 @@ pipeline {
        stage('Sonar Scan') {
     steps {
         withSonarQubeEnv('sonar') {
-            withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+            withCredentials([string(credentialsId: 'sonar-cred', variable: 'SONAR_TOKEN')]) {
                 sh """
                 ${tool 'sonar-scanner'}/bin/sonar-scanner \
                 -Dsonar.projectKey=php-ecommerce \
