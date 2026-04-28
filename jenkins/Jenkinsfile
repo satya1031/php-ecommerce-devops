@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment { 
-        IMAGE = "18.220.217.117:8081/php-hosted"
+        IMAGE = "18.220.217.117:8083/docker-hosted/php-hosted"
         SONAR_SERVER = "sonar"
-        NEXUS_URL = "18.220.217.117:8081"
+        NEXUS_URL = "18.220.217.117:8083"
     }
 
     stages {
