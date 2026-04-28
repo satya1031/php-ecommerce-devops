@@ -12,8 +12,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                credentialsId: 'git-cred',
-                url: 'https://github.com/sridattaga/php-ecommerce-devops.git'
+                credentialsId: 'github-cred',
+                url: 'https://github.com/satya1031/php-ecommerce-devops.git'
             }
         }
 
