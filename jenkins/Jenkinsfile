@@ -40,21 +40,20 @@ pipeline {
     }
 }
 
-        // 🔥 NEW: PUSH TO NEXUS
-        stage('Push to Nexus') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'nexus-cred',
-                    usernameVariable: 'NEXUS_USER',
-                    passwordVariable: 'NEXUS_PASS'
-                )]) {
-                    sh """
-                    echo $NEXUS_PASS | docker login 18.220.217.117:8081 -u $NEXUS_USER --password-stdin
-                    docker push $IMAGE:$BUILD_NUMBER
-                    """
-                }
-            }
+       stage('Push to Nexus') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'nexus-cred',
+            usernameVariable: 'NEXUS_USER',
+            passwordVariable: 'NEXUS_PASS'
+        )]) {
+            sh '''
+            echo $NEXUS_PASS | docker login 18.220.217.117:8083 -u $NEXUS_USER --password-stdin
+            docker push 18.220.217.117:8083/docker-hosted/php-hosted:$BUILD_NUMBER
+            '''
         }
+    }
+}
 
         stage('Deploy to Kubernetes') {
             steps {
